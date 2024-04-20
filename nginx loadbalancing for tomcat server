@@ -1,0 +1,84 @@
+#  sudo apt update
+#  cd /opt
+#  sudo apt install openjdk-17-jdk-headless -y
+#  sudo apt install wget unzip -y
+#  sudo wget https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.20/bin/apache-tomcat-10.1.20.zip
+#  sudo unzip apache-tomcat-10.1.20.zip
+#  cd apache-tomcat-10.1.20/bin/
+#  sudo ln -s /opt/apache-tomcat-10.1.20/bin/startup.sh /usr/bin/startTomcat
+#  sudo ln -s /opt/apache-tomcat-10.1.20/bin/shutdown.sh /usr/bin/stopTomcat
+#  chmod u+x /opt/apache-tomcat-10.1.20/bin/*.sh
+#  sudo chmod u+x /usr/bin/startTomcat
+#  sudo chmod u+x /usr/bin/stopTomcat
+#  startTomcat
+Server1
+http://15.206.171.130:8080/
+http://15.206.171.130:8080/sample/
+server2
+http://13.235.241.27:8080/
+http://13.235.241.27:8080/sample/
+server3
+http://65.2.128.166:8080/
+http://65.2.128.166:8080/sample/
+ 
+
+
+#  cd /opt/apache-tomcat-10.1.20/webapps/
+#  sudo wget https://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war
+
+Install and configure ngnix
+# dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+#  sudo yum install nginx
+#  systemctl enable nginx.service
+#  systemctl start nginx.service
+#  systemctl status nginx.service
+13.233.231.83:80
+ 
+#  cd /etc/nginx/
+#  ls
+#  mv nginx.conf nginx.conf_back
+#  ls
+#  vi nginx.conf
+
+
+-----------------------------------------------------------------------------------------------------
+events{
+   worker_connections 1024;
+}
+http {
+  keepalive_timeout  5;
+  upstream tomcatServers {
+        keepalive 50;
+        server 15.206.171.130:8080;
+        server 13.235.241.27:8080;
+        server 65.2.128.166:8080;
+}
+server{
+    listen 80;
+    location / {
+        proxy_set_header        X-Real-IP $remote_addr;
+        proxy_set_header        X-Forwarded-For %proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_set_header        Host $host;
+        proxy_pass http://tomcatServers;
+}
+}
+}
+-------------------------------------------------------------
+#nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+
+# nginx -s reload
+#  systemctl restart nginx
+
+
+ 
+
+This will throw error while selinux(Security Enhnance linux) is enabled . 
+# setsebool -P httpd_can_network_connect true
+ 
+
+http://13.233.231.83/sample/
+ 
+
